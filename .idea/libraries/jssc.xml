@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jssc">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/UARTDriver/lib/JSSC/jssc.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
