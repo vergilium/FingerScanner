@@ -1,4 +1,4 @@
-package main.consts;
+package Consts;
 
 public enum Flags {
     /** The system is busy */       BUSY((byte)0x34),

@@ -1,4 +1,4 @@
-package main.consts;
+package Consts;
 
 public enum Commands {
     /*
