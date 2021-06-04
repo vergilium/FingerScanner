@@ -1,6 +1,8 @@
 package Consts;
 
-public enum Flags {
+import Abstract.IFlag;
+
+public enum ErrFlag implements IFlag {
     /** The system is busy */       BUSY((byte)0x34),
     /** successful */               SUCCESS((byte)0x61),
     /** failed */                   FAIL((byte)0x63),
@@ -20,10 +22,11 @@ public enum Flags {
 
     private final byte flag;
 
-    Flags(byte flag){
+    ErrFlag(byte flag){
         this.flag = flag;
     }
 
+    @Override
     public byte getFlag(){
         return flag;
     }

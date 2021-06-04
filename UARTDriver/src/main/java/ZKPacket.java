@@ -1,16 +1,21 @@
+import Abstract.IFlag;
 import Abstract.IZKPacket;
 import Consts.Commands;
-import Consts.Flags;
+import Consts.ErrFlag;
 
 public class ZKPacket implements IZKPacket {
     private final byte[] packet;
 
-    public ZKPacket(Commands cmd, int param, int size, Flags flag){
+    public ZKPacket(Commands cmd, Integer param, Integer size, IFlag flag){
         packet = new byte[13];
         packet[0] = PACKET_START;
         packet[1] = cmd.getCommand();
-        System.arraycopy(IntToBytes(param),0, packet, 2, 4);
-        System.arraycopy(IntToBytes(size),0, packet, 6, 4);
+        if(param != null){
+            System.arraycopy(IntToBytes(param),0, packet, 2, 4);
+        }
+        if(size != null) {
+            System.arraycopy(IntToBytes(size), 0, packet, 6, 4);
+        }
         packet[10] = flag.getFlag();
         packet[12] = PACKET_STOP;
     }
@@ -27,7 +32,7 @@ public class ZKPacket implements IZKPacket {
     private static byte getCRC(byte[] buffer){
         byte crc = 0;
         for(int i=0; i<11; i++){
-            crc+=buffer[i];
+            crc += buffer[i];
         }
         return (byte)(crc&0xFF);
     }

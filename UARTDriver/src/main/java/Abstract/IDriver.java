@@ -1,12 +1,14 @@
 package Abstract;
 
+import Consts.ErrFlag;
+
 public interface IDriver {
 
     int OpenDevice();
 
-    int CloseDevice(long var0);
+    int CloseDevice();
 
-    int GetParameter(long var0, int var2, byte[] var3, int[] var4);
+    int GetParameter(IFlag code, Integer paramValue, Integer size);
 
     int SetParameter(long var0, int var2, byte[] var3, int var4);
 

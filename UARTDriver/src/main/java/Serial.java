@@ -1,5 +1,6 @@
 import Abstract.ISerial;
 
+import Abstract.IZKPacket;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -58,8 +59,13 @@ public final class Serial implements ISerial {
     }
 
     @Override
-    public void enableDevice() throws IOException {
-
+    public boolean sendPacket(IZKPacket packet) throws SerialPortException {
+        StringBuilder str = new StringBuilder("Sended data: ");
+        for(byte b: packet.getPacket()){
+            str.append(String.format(" 0x%02x", b));
+        }
+        System.out.println(str.toString());
+        return serialPort.writeBytes(packet.getPacket());
     }
 
     static class SerialPortReader implements SerialPortEventListener{

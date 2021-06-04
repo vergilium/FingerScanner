@@ -24,5 +24,5 @@ public interface ISerial {
     void openPort() throws IOException, SerialPortException;
     void closePort() throws IOException, SerialPortException;
 
-    void enableDevice() throws IOException;
+    boolean sendPacket(IZKPacket packet) throws SerialPortException;
 }
