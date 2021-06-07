@@ -9,6 +9,7 @@ public interface IDriver {
     int CloseDevice();
 
     int GetParameter(IFlag code, Integer paramValue, Integer size);
+    int GetParameter(IFlag code);
 
     int SetParameter(long var0, int var2, byte[] var3, int var4);
 

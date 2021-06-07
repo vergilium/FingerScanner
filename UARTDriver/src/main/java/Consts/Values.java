@@ -37,7 +37,7 @@ public enum Values implements IFlag {
     }
 
     @Override
-    public byte getFlag() {
+    public byte getValue() {
         return value;
     }
 }

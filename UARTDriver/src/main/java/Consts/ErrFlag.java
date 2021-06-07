@@ -27,7 +27,14 @@ public enum ErrFlag implements IFlag {
     }
 
     @Override
-    public byte getFlag(){
+    public byte getValue(){
         return flag;
+    }
+
+    public static IFlag getFlag(byte n) {
+        for(ErrFlag o : values())
+            if(o.getValue() == n)
+                return o;
+        return null;
     }
 }

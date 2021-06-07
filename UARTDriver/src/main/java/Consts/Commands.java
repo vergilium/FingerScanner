@@ -116,7 +116,14 @@ public enum Commands {
         this.command = command;
     }
 
-    public byte getCommand() {
+    public byte getValue() {
         return command;
+    }
+
+    public static Commands getCommand(byte n){
+        for(Commands c : values())
+            if(c.getValue() == n)
+                return c;
+        return null;
     }
 }

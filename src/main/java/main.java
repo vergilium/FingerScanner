@@ -9,7 +9,7 @@ public class main {
             IDriver driver = new ZKTDriver();
             if(driver.OpenDevice() == 1){
                 System.out.println("Port opened!");
-                driver.GetParameter(SidFlag.SID_BAUDRATE, null, null);
+                driver.GetParameter(SidFlag.SID_BAUDRATE);
             }
             while (true) {
             }

@@ -1,5 +1,6 @@
 package Abstract;
 
 public interface IFlag {
-    byte getFlag();
+    byte getValue();
+    //IFlag getFlag(byte n);
 }

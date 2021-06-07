@@ -46,6 +46,14 @@ public final class ZKTDriver implements IDriver {
         return 1;
     }
 
+    /**
+     * Get method of saved configuration in fingerprint module
+     * @param code SID flag by needed parameter
+     * @param paramValue null
+     * @param size null
+     * @return {int} Status value: 0 - success, -1 - error
+     * @throws InvalidParameterException May be throw exception of invalid set parameter
+     */
     @Override
     public int GetParameter(IFlag code, Integer paramValue, Integer size) throws InvalidParameterException {
         IFlag[] allowed_code = {
@@ -77,6 +85,17 @@ public final class ZKTDriver implements IDriver {
             System.out.println(ex.getMessage());
             return -1;
         }
+    }
+
+    /**
+     * Get method of saved configuration in fingerprint module
+     * @param code {IFlag} SID flag by needed parameter
+     * @return {int} Status value: 0 - success, -1 - error
+     * @throws InvalidParameterException May be throw exception of invalid set parameter
+     */
+    @Override
+    public int GetParameter(IFlag code) throws InvalidParameterException{
+        return GetParameter(code, null, null);
     }
 
     @Override

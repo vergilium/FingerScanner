@@ -1,12 +1,13 @@
 import Abstract.ISerial;
 
 import Abstract.IZKPacket;
+import Consts.Commands;
+import Consts.ErrFlag;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 
-import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 
@@ -61,14 +62,15 @@ public final class Serial implements ISerial {
     @Override
     public boolean sendPacket(IZKPacket packet) throws SerialPortException {
         StringBuilder str = new StringBuilder("Sended data: ");
-        for(byte b: packet.getPacket()){
+        for(byte b: packet.makePacket()){
             str.append(String.format(" 0x%02x", b));
         }
         System.out.println(str.toString());
-        return serialPort.writeBytes(packet.getPacket());
+        return serialPort.writeBytes(packet.makePacket());
     }
 
     static class SerialPortReader implements SerialPortEventListener{
+        ZKPacket packet = new ZKPacket();
 
         @Override
         public void serialEvent(SerialPortEvent serialPortEvent) {
@@ -78,6 +80,13 @@ public final class Serial implements ISerial {
                 StringBuilder str = new StringBuilder("Received data: ");
                 for(byte b: buffer){
                     str.append(String.format(" 0x%02x", b));
+                    if(packet.receivePacket(b) != null){
+                        System.out.println("Command: " + Commands.valueOf(packet.command.name())
+                                + "\nParam: " + packet.param
+                                + "\nSize: " + packet.size
+                                + "\nFlag: " + packet.flag.getValue()
+                        );
+                    }
                 }
                 System.out.println(str.toString());
             }
