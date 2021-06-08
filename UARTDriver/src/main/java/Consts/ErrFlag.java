@@ -31,7 +31,7 @@ public enum ErrFlag implements IFlag {
         return flag;
     }
 
-    public static IFlag getFlag(byte n) {
+    public static ErrFlag getFlag(byte n) {
         for(ErrFlag o : values())
             if(o.getValue() == n)
                 return o;

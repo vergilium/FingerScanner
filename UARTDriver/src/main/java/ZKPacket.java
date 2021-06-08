@@ -2,6 +2,8 @@ import Abstract.IFlag;
 import Abstract.IZKPacket;
 import Consts.Commands;
 import Consts.ErrFlag;
+import Consts.SidFlag;
+import Consts.Values;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
@@ -44,6 +46,24 @@ public class ZKPacket implements IZKPacket {
     }
 
     @Override
+    public Values getParam(SidFlag s){
+        if(param != null){
+
+            Values v;
+            switch(command){
+                case MD_SYS_RP:
+                    if((v = Values.findValue(p)) != null){
+                        return v;
+                    } break;
+                case MD_SYS_WP:
+
+                default: break;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public byte[] makePacket() throws InvalidParameterException {
         packet[0] = PACKET_START;
         if(command != null) { packet[1] = command.getValue(); }
@@ -54,6 +74,31 @@ public class ZKPacket implements IZKPacket {
         packet[11] = getCRC(packet);
         packet[12] = PACKET_STOP;
         return packet;
+    }
+
+    public IZKPacket receivePacket(byte data ){
+        byte[] param_buff = new byte[4];
+        if(!this.received) {
+            if (data == PACKET_STOP && index == 12) {
+                this.packet[12] = PACKET_STOP;
+                this.received = true;
+                this.errored = false;
+                index = 0;
+
+                this.command = Commands.getCommand(packet[1]);
+                this.param = BytesToInt(Arrays.copyOfRange(packet, 2,6));
+
+                this.size = BytesToInt(Arrays.copyOfRange(packet, 6,10));
+                this.flag = ErrFlag.getFlag(packet[10]);
+
+                return this;
+            }
+
+            packet[index] = data;
+            index++;
+
+        }
+        return null;
     }
 
     private static byte[] IntToBytes(int number){
@@ -80,30 +125,5 @@ public class ZKPacket implements IZKPacket {
             crc += buffer[i];
         }
         return (byte)(crc&0xFF);
-    }
-
-
-    public IZKPacket receivePacket(byte data ){
-        byte[] param_buff = new byte[4];
-        if(!this.received) {
-            if (data == PACKET_STOP && index == 12) {
-                this.packet[12] = PACKET_STOP;
-                this.received = true;
-                this.errored = false;
-                index = 0;
-
-                this.command = Commands.getCommand(packet[1]);
-                this.param = BytesToInt(Arrays.copyOfRange(packet, 2,6));
-                this.size = BytesToInt(Arrays.copyOfRange(packet, 6,10));
-                this.flag = ErrFlag.getFlag(packet[10]);
-
-                return this;
-            }
-
-            packet[index] = data;
-            index++;
-
-        }
-        return null;
     }
 }

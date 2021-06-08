@@ -1,15 +1,22 @@
 import Abstract.IDriver;
 import Abstract.IFlag;
 import Abstract.ISerial;
+import Abstract.IZKPacket;
 import Consts.Commands;
 import Consts.ErrFlag;
 import Consts.SidFlag;
+import Consts.Values;
 
 import java.security.InvalidParameterException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+
+import static com.ea.async.Async.await;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 
 public final class ZKTDriver implements IDriver {
+    private IZKPacket _packet = null;
 
     /**
      * Open device port and initialize port parameters
@@ -55,7 +62,7 @@ public final class ZKTDriver implements IDriver {
      * @throws InvalidParameterException May be throw exception of invalid set parameter
      */
     @Override
-    public int GetParameter(IFlag code, Integer paramValue, Integer size) throws InvalidParameterException {
+    public int GetParameter(IFlag code, IZKPacket paramValue) throws InvalidParameterException {
         IFlag[] allowed_code = {
                 SidFlag.SID_SAVE_LOG,
                 SidFlag.SID_AUTO_ACK,
@@ -77,25 +84,15 @@ public final class ZKTDriver implements IDriver {
         }
 
         try {
-            ZKPacket packet = new ZKPacket(Commands.MD_SYS_RP, paramValue, size, code);
-            ISerial serial = Serial.initPort();
+            ZKPacket packet = new ZKPacket(Commands.MD_SYS_RP, null, null, code);
+            Serial serial = (Serial) Serial.initPort();
             serial.sendPacket(packet);
+            serial.getPacket((ZKPacket) paramValue);
             return 0;
         }catch(Exception ex){
             System.out.println(ex.getMessage());
             return -1;
         }
-    }
-
-    /**
-     * Get method of saved configuration in fingerprint module
-     * @param code {IFlag} SID flag by needed parameter
-     * @return {int} Status value: 0 - success, -1 - error
-     * @throws InvalidParameterException May be throw exception of invalid set parameter
-     */
-    @Override
-    public int GetParameter(IFlag code) throws InvalidParameterException{
-        return GetParameter(code, null, null);
     }
 
     @Override

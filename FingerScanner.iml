@@ -12,8 +12,10 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Pi4J" level="project" />
+    <orderEntry type="module" module-name="UARTDriver" />
     <orderEntry type="library" name="Maven: com.typesafe:config:1.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.scream3r:jssc:2.8.0" level="project" />
-    <orderEntry type="module" module-name="UARTDriver" />
+    <orderEntry type="library" name="Maven: com.ea.async:ea-async:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
   </component>
 </module>

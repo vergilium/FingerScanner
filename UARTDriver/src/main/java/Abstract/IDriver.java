@@ -2,15 +2,15 @@ package Abstract;
 
 import Consts.ErrFlag;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface IDriver {
 
     int OpenDevice();
 
     int CloseDevice();
 
-    int GetParameter(IFlag code, Integer paramValue, Integer size);
-    int GetParameter(IFlag code);
-
+    int GetParameter(IFlag code, IZKPacket paramValue);
     int SetParameter(long var0, int var2, byte[] var3, int var4);
 
     /*

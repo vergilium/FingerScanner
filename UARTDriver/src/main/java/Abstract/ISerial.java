@@ -1,5 +1,6 @@
 package Abstract;
 
+import Events.EventManager;
 import jssc.SerialPort;
 import jssc.SerialPortException;
 
@@ -17,6 +18,7 @@ public interface ISerial {
     /*int SERIAL_STOPBIT_DEFAULT = SerialPort.STOPBITS_1;
     int SERIAL_PARITY_DEFAULT = SerialPort.PARITY_NONE;
     int SERIAL_DATASIZE_DEFAULT = SerialPort.DATABITS_8; */
+    EventManager events = null;
 
     boolean isOpened();
 
