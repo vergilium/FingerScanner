@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <!-- Секция аппендеров -->
+    <Appenders>
+        <!-- Файловый аппендер -->
+        <File name="app_log" fileName="app.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </File>
+        <!-- Файловый аппендер -->
+        <File name="err_log" fileName="error.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <!-- Секция логгеров -->
+    <Loggers>
+        <!-- Корневой логгер -->
+        <Root level="trace">
+            <AppenderRef ref="app_log" level="DEBUG"/>
+        </Root>
+        <!-- Логгер нашего класса -->
+        <Logger name="error" level="error" additivity="false">
+            <AppenderRef ref="err_log" level="ERROR"/>
+        </Logger>
+    </Loggers>
+</Configuration>

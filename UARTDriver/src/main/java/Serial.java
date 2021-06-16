@@ -1,12 +1,12 @@
 import Abstract.ISerial;
 
 import Abstract.IZKPacket;
-import Events.EventListener;
-import Events.EventManager;
 import jssc.*;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public final class Serial implements ISerial {
     private static Serial instance;
@@ -15,13 +15,30 @@ public final class Serial implements ISerial {
     private final short stopbit;
     private final short parity;
     private final short databits;
+    private final int recTimeout;
     private boolean isOpened;
 
-    public EventManager events;
+    /**
+     * Static method for get serial port instanse.
+     * If object of serial do not created, it will be create
+     * and return new instance.
+     * @return {ISerial} serial port instance
+     * @throws InvalidParameterException
+     */
+    public static ISerial initPort() throws InvalidParameterException {
+        if(instance == null){
+            instance = new Serial(Settings.getInstance());
+        }
+        return instance;
+    }
 
+    /**
+     * COnstructor of serial class.
+     * @param config {Settings} object for port configuration
+     * @see Settings#getInstance()
+     * @throws InvalidParameterException
+     */
     private Serial(Settings config) throws InvalidParameterException {
-        events = new EventManager("onPakege");
-
         serialPort = new SerialPort(config.UART_PORT);
         if(Arrays.stream(SERIAL_BAUDRATES_ALLOVED).anyMatch(b -> b == config.UART_BAUDRATE)) {
             baudrate = config.UART_BAUDRATE;
@@ -32,35 +49,33 @@ public final class Serial implements ISerial {
         parity = config.UART_PARITY;
         databits = config.UART_DATABITS;
         isOpened = false;
+        recTimeout = config.UART_RECEIVE_TIMEOUT;
     }
 
+    /**
+     * Getter for flag of port open status
+     * @return {boolean} port status
+     */
+    @Override
     public boolean isOpened(){
         return isOpened;
     }
 
-    public IZKPacket getPacket(ZKPacket packet) throws SerialPortException, SerialPortTimeoutException {
-        byte[] message = serialPort.readBytes(13, 1000);
-        for(byte b: message){
-            packet.receivePacket(b);
-        }
-        return packet;
-    }
-
-    public static ISerial initPort() throws InvalidParameterException {
-        if(instance == null){
-            instance = new Serial(Settings.getInstance());
-        }
-        return instance;
-    }
-
+    /**
+     * Open and configure port.
+     * Configuration parameter can set in constructor.
+     * @see Serial#Serial(Settings)
+     * @throws SerialPortException
+     */
     @Override
     public void openPort() throws SerialPortException {
+                String[] portNames = SerialPortList.getPortNames();
+                for (String portName : portNames) {
+                    System.out.println(portName);
+                }
         isOpened = serialPort.openPort();
         serialPort.setParams(baudrate, databits, stopbit, parity);
         serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-        int mask = SerialPort.MASK_RXCHAR;
-        serialPort.setEventsMask(mask);
-//        serialPort.addEventListener(new SerialPortReader(events));
     }
 
     @Override
@@ -69,44 +84,26 @@ public final class Serial implements ISerial {
     }
 
     @Override
+    public IZKPacket getPacket(IZKPacket packet) throws SerialPortException, SerialPortTimeoutException {
+         return packet.receivePacket(serialPort.readBytes(IZKPacket.PACKET_SIZE, recTimeout));
+    }
+
+    @Override
     public boolean sendPacket(IZKPacket packet) throws SerialPortException {
         StringBuilder str = new StringBuilder("Sended data: ");
         for(byte b: packet.makePacket()){
             str.append(String.format(" 0x%02x", b));
         }
-        System.out.println(str.toString());
+       // System.out.println(str.toString());
         return serialPort.writeBytes(packet.makePacket());
     }
 
-    static class SerialPortReader implements SerialPortEventListener {
-        ZKPacket packet = new ZKPacket();
-        public EventManager events;
-        public SerialPortReader(EventManager events){
-            this.events = events;
+    @Override
+    public int getTemplate(List<Byte> template, Integer size) throws SerialPortException {
+        for(byte b: serialPort.readBytes(size)){
+            template.add(b);
         }
-
-        @Override
-        public void serialEvent(SerialPortEvent serialPortEvent) {
-            try {
-                byte[] buffer = serialPort.readBytes();
-
-                StringBuilder str = new StringBuilder("Received data: ");
-                for(byte b: buffer){
-                    str.append(String.format(" 0x%02x", b));
-                    if(packet.receivePacket(b) != null){
-                        System.out.println("Command: " + packet.command
-                                + "\nParam: " + packet.param
-                                + "\nSize: " + packet.size
-                                + "\nFlag: " + packet.flag
-                        );
-                        this.events.Notify("onPackege", packet);
-                    }
-                }
-                System.out.println(str.toString());
-            }
-            catch (SerialPortException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
+        return template.size();
     }
+
 }

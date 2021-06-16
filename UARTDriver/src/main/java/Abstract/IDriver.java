@@ -1,17 +1,23 @@
 package Abstract;
 
 import Consts.ErrFlag;
+import Consts.Values;
 
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IDriver {
 
     int OpenDevice();
+    int EnableDevice();
 
     int CloseDevice();
 
-    int GetParameter(IFlag code, IZKPacket paramValue);
-    int SetParameter(long var0, int var2, byte[] var3, int var4);
+    int GetParameter(IFlag code, IZKPacket paramValue) throws InvalidParameterException;
+    int SetParameter(IFlag code, Values param) throws InvalidParameterException;
+    int ScanTemplate(List<Byte> template);
 
     /*
     int GetCapParams(long var0, int[] var2, int[] var3);

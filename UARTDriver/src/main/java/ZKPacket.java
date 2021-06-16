@@ -46,21 +46,8 @@ public class ZKPacket implements IZKPacket {
     }
 
     @Override
-    public Values getParam(SidFlag s){
-        if(param != null){
-
-            Values v;
-            switch(command){
-                case MD_SYS_RP:
-                    if((v = Values.findValue(p)) != null){
-                        return v;
-                    } break;
-                case MD_SYS_WP:
-
-                default: break;
-            }
-        }
-        return null;
+    public Integer getParam(){
+       return param;
     }
 
     @Override
@@ -77,27 +64,34 @@ public class ZKPacket implements IZKPacket {
     }
 
     public IZKPacket receivePacket(byte data ){
-        byte[] param_buff = new byte[4];
         if(!this.received) {
             if (data == PACKET_STOP && index == 12) {
                 this.packet[12] = PACKET_STOP;
                 this.received = true;
                 this.errored = false;
                 index = 0;
-
                 this.command = Commands.getCommand(packet[1]);
                 this.param = BytesToInt(Arrays.copyOfRange(packet, 2,6));
-
                 this.size = BytesToInt(Arrays.copyOfRange(packet, 6,10));
                 this.flag = ErrFlag.getFlag(packet[10]);
-
                 return this;
             }
-
             packet[index] = data;
             index++;
-
         }
+        return null;
+    }
+
+    @Override
+    public IZKPacket receivePacket(byte[] data ){
+        if (data[12] == PACKET_STOP && data[11] == getCRC(data)) {
+            command = Commands.getCommand(data[1]);
+            param = BytesToInt(Arrays.copyOfRange(data, 2,6));
+            size = BytesToInt(Arrays.copyOfRange(data, 6,10));
+            flag = ErrFlag.getFlag(data[10]);
+            return this;
+        }
+        errored = true;
         return null;
     }
 
