@@ -18,6 +18,7 @@ public interface IDriver {
     int GetParameter(IFlag code, IZKPacket paramValue) throws InvalidParameterException;
     int SetParameter(IFlag code, Values param) throws InvalidParameterException;
     int ScanTemplate(List<Byte> template);
+    int IdentifyFree();
 
     /*
     int GetCapParams(long var0, int[] var2, int[] var3);

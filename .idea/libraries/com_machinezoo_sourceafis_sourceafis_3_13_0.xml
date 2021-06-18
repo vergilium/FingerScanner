@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="com.machinezoo.sourceafis:sourceafis:3.13.0" type="repository">
+    <properties maven-id="com.machinezoo.sourceafis:sourceafis:3.13.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/sourceafis-3.13.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/gson-2.8.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-databind-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-annotations-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-core-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jackson-dataformat-cbor-2.12.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/fastutil-8.5.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/fingerprintio-1.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/noexception-1.6.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.30.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jnbis-2.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-io-2.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

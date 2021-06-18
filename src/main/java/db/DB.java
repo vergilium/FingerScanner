@@ -31,6 +31,7 @@ public final class DB {
 
     public int connect(){
         try {
+            log.debug("Connecting to DB path: " + url);
             // create a connection to the database
             conn = DriverManager.getConnection(url);
 
@@ -38,8 +39,7 @@ public final class DB {
                 log.info("Connection to DB has been established.");
                 return 0;
             }
-            throw new SQLException("test");
-           // return 1;
+            return 1;
         } catch (SQLException ex) {
             log.error("Error connection to DB!", ex);
             return -1;
@@ -66,13 +66,12 @@ public final class DB {
                 log.debug("Could not connect to DB!");
                 return 1;
             }
-            String sql = "CREATE TABLE IF NOT EXISTS finger_template (" +
-                    "    id INTEGER PRIMARY KEY NOT NULL," +
-                    "    uid INTEGER NOT NULL," +
-                    "    last_visit NUMERIC NULL," +
-                    "    scan_count INTEGER NULL," +
-                    "    template BLOB NOT NULL" +
-                    ")";
+            String sql = "CREATE TABLE IF NOT EXISTS finger_template ( " +
+                    "id INTEGER PRIMARY KEY NOT NULL, " +
+                    "uid INTEGER NOT NULL, " +
+                    "last_visit NUMERIC NULL, " +
+                    "scan_count INTEGER NULL, " +
+                    "template BLOB NOT NULL )";
             stmt = conn.createStatement();
             log.debug(sql);
             int cnt_fields = stmt.executeUpdate(sql);

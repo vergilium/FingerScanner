@@ -24,11 +24,12 @@ public class main {
             TimerTask readTemplate = new ReadTemplate();
 
             if(driver.OpenDevice() == 0){
-                System.out.println("Port opened!");
                 if(driver.EnableDevice() == 0){
                     IZKPacket packet = new ZKPacket();
                     driver.SetParameter(SidFlag.SID_MODULE_IDENTIFY, Values.VAL_TEMPLATE_MODE);
                     driver.GetParameter(SidFlag.SID_MODULE_IDENTIFY, packet);
+                    driver.SetParameter(SidFlag.SID_TEMPLATE_FORMAT, Values.VAL_BAUDRATE_38400);
+                    driver.GetParameter(SidFlag.SID_TEMPLATE_FORMAT, packet);
                     sTimer.schedule(readTemplate, 0, 1000);
                 }
             }

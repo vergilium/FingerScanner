@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-    <!-- Секция аппендеров -->
+    <!-- Appenders secton -->
     <Appenders>
-        <!-- Файловый аппендер -->
+        <!-- Consolas appender -->
+        <Console name="stdout">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <!-- File appender -->
         <File name="app_log" fileName="app.log">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
-        <!-- Файловый аппендер -->
+        <!-- File appender -->
         <File name="err_log" fileName="error.log">
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
     </Appenders>
-    <!-- Секция логгеров -->
+    <!-- Loggers section -->
     <Loggers>
-        <!-- Корневой логгер -->
+        <!-- Root logger -->
         <Root level="trace">
             <AppenderRef ref="app_log" level="DEBUG"/>
-        </Root>
-        <!-- Логгер нашего класса -->
-        <Logger name="error" level="error" additivity="false">
+            <AppenderRef ref="stdout"/>
             <AppenderRef ref="err_log" level="ERROR"/>
-        </Logger>
+        </Root>
     </Loggers>
 </Configuration>

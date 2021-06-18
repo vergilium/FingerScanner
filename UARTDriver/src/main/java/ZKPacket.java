@@ -95,6 +95,16 @@ public class ZKPacket implements IZKPacket {
         return null;
     }
 
+    @Override
+    public String toString(){
+        return "\n========PACKET START=========" +
+                "\nCommand: " + command +
+                "\nParam: " + param +
+                "\nSize: " + size +
+                "\nFlag: " + flag +
+                "\n========PACKET STOP==========";
+    }
+
     private static byte[] IntToBytes(int number){
         byte[] buff = new byte[4];
         buff[3] = (byte)(number >> 24);

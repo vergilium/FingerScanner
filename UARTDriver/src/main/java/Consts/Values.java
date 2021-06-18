@@ -29,7 +29,11 @@ public enum Values implements IFlag {
     /** Idle mode manual */             VAL_IDLE_MANUAL((byte)0x31),
 
     /** Uniform effect ON */            VAL_UNIFORM_ON((byte)0x31),
-    /** Uniform effect OFF (default) */ VAL_UNIFORM_OFF((byte)0x30);
+    /** Uniform effect OFF (default) */ VAL_UNIFORM_OFF((byte)0x30),
+
+    /** Template format ZKFinger v10 (default) */ VAL_FORMAT_ZK10((byte)0x30),
+    /** Template format ANSI 378 */     VAL_FORMAT_ANSI((byte)0x31),
+    /** Template format ISO 19794-2 */  VAL_FORMAT_ISO((byte)0x31);
 
     private final byte value;
     Values(byte value){

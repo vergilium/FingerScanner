@@ -6,15 +6,23 @@ import Consts.Commands;
 import Consts.ErrFlag;
 import Consts.SidFlag;
 import Consts.Values;
-import jssc.SerialPortException;
+
+import com.zkteco.biometric.FingerprintSensorEx;
+import com.zkteco.biometric.ZKFPService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.util.ArrayUtils;
+import zkfinger.FingerprintService;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
 
 
+
 public final class ZKTDriver implements IDriver {
+    private static final Logger log = LogManager.getLogger(ZKTDriver.class);
 
     /**
      * Open device port and initialize port parameters
@@ -30,7 +38,7 @@ public final class ZKTDriver implements IDriver {
                 return 0;
             }
         } catch(Exception ex){
-            System.out.println(ex.getMessage());
+            log.error("Error opened device!", ex);
             return -1;
         }
         return 1;
@@ -44,15 +52,16 @@ public final class ZKTDriver implements IDriver {
                 serial.sendPacket(enable);
                 serial.getPacket(enable);
                 if(enable.flag == ErrFlag.SUCCESS){
-                    System.out.println("Fingerprinter device has enabled!");
+                    log.info("Fingerprint device has been enabled!");
                     return 0;
                 }
-                System.out.println("Fingerprinter device has NOT enabled!");
+                log.warn("Fingerprinte device has NOT enabled!");
                 return 1;
             }
-            System.out.println("Port has not opened");
+            log.warn("Serial port can`t be opened");
             return 2;
         }catch(Exception ex){
+            log.error("Fingerprint device can`t be enabled! Throwed undefined error!", ex);
             return -1;
         }
     }
@@ -66,9 +75,12 @@ public final class ZKTDriver implements IDriver {
         try{
             ISerial serial = Serial.initPort();
             serial.closePort();
-            if(!serial.isOpened()) return 0;
+            if(!serial.isOpened()){
+                log.info("Comunication with fingerprint device has been stoped!");
+                return 0;
+            }
         }catch(Exception ex){
-            System.out.println(ex.getMessage());
+            log.error("Error disabling the fingerprint device!", ex);
             return -1;
         }
         return 1;
@@ -97,6 +109,7 @@ public final class ZKTDriver implements IDriver {
                 ,SidFlag.SID_LOG_COUNT
                 ,SidFlag.SID_BUILD_NUM
                 ,SidFlag.SID_MODULE_IDENTIFY
+                ,SidFlag.SID_TEMPLATE_FORMAT
         };
 
         if(!Arrays.asList(allowed_code).contains(code)){
@@ -107,10 +120,10 @@ public final class ZKTDriver implements IDriver {
             ZKPacket packet = new ZKPacket(Commands.MD_SYS_RP, null, null, code);
             Serial serial = (Serial) Serial.initPort();
             serial.sendPacket(packet);
-            serial.getPacket((ZKPacket) paramValue);
+            serial.getPacket(paramValue);
             return 0;
         }catch(Exception ex){
-            System.out.println(ex.getMessage());
+            log.error("Error get parameter from fingerprint device");
             return -1;
         }
     }
@@ -124,6 +137,7 @@ public final class ZKTDriver implements IDriver {
                 ,SidFlag.SID_TIMEOUT
                 ,SidFlag.SID_MODULE_IDENTIFY
                 ,SidFlag.SID_MODULE_ID
+                ,SidFlag.SID_TEMPLATE_FORMAT
         };
 
         ZKPacket respose = new ZKPacket();
@@ -138,11 +152,13 @@ public final class ZKTDriver implements IDriver {
             serial.sendPacket(packet);
             serial.getPacket(respose);
             if(respose.flag == ErrFlag.SUCCESS){
+                log.debug("Parameter " + code + " has been setted in value: " + param + ".");
                 return 0;
             }
+            log.debug("Can`t set parameter " + code + " with value: " + param + ".");
             return 1;
         }catch(Exception ex){
-            System.out.println(ex.getMessage());
+            log.error("Can`t set parameter. Throwed undefine error!", ex);
             return -1;
         }
 
@@ -159,8 +175,29 @@ public final class ZKTDriver implements IDriver {
             }
             return 0;
         }catch (Exception ex){
-            System.out.println(ex.getMessage());
+            log.error("Error geted new template!", ex);
             return -1;
         }
     }
+
+    public int IdentifyFree(){
+        try{
+            ZKPacket packet = new ZKPacket(Commands.MD_IDENTIFY_FREE, null, null, null);
+            Serial serial = (Serial) Serial.initPort();
+            serial.sendPacket(packet);
+            serial.getPacket(packet);
+            if(packet.flag == ErrFlag.SUCCESS){
+                log.info("====== SUCCESS: " + packet.param + " ==========");
+                return packet.param;
+            } else if(packet.flag == ErrFlag.FAIL){
+                log.info("=====IDENTIFY FAILED========");
+            }
+            return 0;
+        }catch (Exception ex){
+            log.error("Error geted new template!", ex);
+            return -1;
+        }
+    }
+
+
 }
