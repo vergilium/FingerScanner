@@ -7,12 +7,8 @@ import Consts.ErrFlag;
 import Consts.SidFlag;
 import Consts.Values;
 
-import com.zkteco.biometric.FingerprintSensorEx;
-import com.zkteco.biometric.ZKFPService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.util.ArrayUtils;
-import zkfinger.FingerprintService;
 
 import java.security.InvalidParameterException;
 
