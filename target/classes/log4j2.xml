@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <!-- Appenders secton -->
+    <Appenders>
+        <!-- Consolas appender -->
+        <Console name="stdout">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <!-- File appender -->
+        <File name="app_log" fileName="app.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </File>
+        <!-- File appender -->
+        <File name="err_log" fileName="error.log">
+            <PatternLayout>
+                <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+            </PatternLayout>
+        </File>
+    </Appenders>
+    <!-- Loggers section -->
+    <Loggers>
+        <!-- Root logger -->
+        <Root level="trace">
+            <AppenderRef ref="app_log" level="DEBUG"/>
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="err_log" level="ERROR"/>
+        </Root>
+    </Loggers>
+</Configuration>
