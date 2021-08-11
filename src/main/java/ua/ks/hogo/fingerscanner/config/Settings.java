@@ -17,6 +17,8 @@ public final class Settings{
     public String HTTP_SERVER_HOST;
     public int HTTP_SERVER_PORT;
 
+    public final String NETWORK_INTERFACE;
+
     public Settings(){
         Config config = ConfigFactory.load();
         /* Validating configuration */
@@ -33,6 +35,7 @@ public final class Settings{
         HTTP_SERVER_PORT = config.getInt("HTTP.Port");
         HTTP_REQUEST_TIMEOUT = config.getInt("HTTP.Timeout");
 
+        NETWORK_INTERFACE = config.getString("Network.Interface");
     }
 
 }
