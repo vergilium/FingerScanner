@@ -10,9 +10,10 @@ import ua.ks.hogo.fingerscanner.net.HttpClient;
 import ua.ks.hogo.fingerscanner.uartdriver.Abstract.FingerDriver;
 import org.springframework.stereotype.Component;
 
-import java.net.URL;
+//import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
@@ -33,12 +34,22 @@ public class ReadTemplate extends TimerTask {
     @SneakyThrows
     @Override
     public void run() {
+
         if(connectionAttempt == 0) {
             log.error("Coud not get configuration. Exit application!");
             Runtime.getRuntime().exit(0);
             return;
         }
-        if(remoteConfig.equals(new RemoteConfig())){
+
+        if(remoteConfig.getToken() == null || Objects.equals(remoteConfig.getToken(), "")){
+            SimpleHttpResponse signIn = httpClient.authorozation().get();
+            if(signIn.getCode() != 200) return;
+            String token = signIn.getBodyText();
+            if(token == null || token.equals("")) return;
+            remoteConfig.setToken(token);
+        }
+
+        if(remoteConfig.getFilial() == null){
             try {
                 connectionAttempt--;
                 SimpleHttpResponse resp = httpClient.getConfiguration().get();
@@ -59,14 +70,14 @@ public class ReadTemplate extends TimerTask {
 
         driver.ScanTemplate(template);
 
-        if(template.size() > 0){
-            URL url = null;
-            try {
-               SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if(template.size() > 0){
+//            //URL url = null;
+//            try {
+//             //  SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 }

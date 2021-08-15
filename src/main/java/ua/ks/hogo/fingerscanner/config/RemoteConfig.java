@@ -1,14 +1,15 @@
 package ua.ks.hogo.fingerscanner.config;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
 @Data
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RemoteConfig {
     @JsonProperty
@@ -34,7 +35,9 @@ public class RemoteConfig {
     @JsonProperty
     private String firmwareCrc;
 
-    public void Init(RemoteConfig parent){
+    private String token;
+
+    public void Init(@NonNull RemoteConfig parent){
         this.filial = parent.getFilial();
         this.bellEnable = parent.getBellEnable();
         this.audioEnable = parent.getAudioEnable();
@@ -46,5 +49,9 @@ public class RemoteConfig {
         this.ntpServer = parent.getNtpServer();
         this.latestFirmware = parent.getLatestFirmware();
         this.firmwareCrc = parent.getFirmwareCrc();
+    }
+
+    public void setToken(String token){
+        this.token = token;
     }
 }
