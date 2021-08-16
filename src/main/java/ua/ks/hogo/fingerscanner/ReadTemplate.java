@@ -70,14 +70,14 @@ public class ReadTemplate extends TimerTask {
 
         driver.ScanTemplate(template);
 
-//        if(template.size() > 0){
-//            //URL url = null;
-//            try {
-//             //  SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+        if(template.size() > 0){
+            //URL url = null;
+            try {
+               SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

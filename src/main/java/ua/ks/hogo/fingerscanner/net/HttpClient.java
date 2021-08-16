@@ -117,6 +117,7 @@ public class HttpClient implements DisposableBean {
      * @return Result matching response.
      */
     public Future<SimpleHttpResponse> matchTemplate(@NonNull List<Byte> template) {
+        System.out.println(sysinfo.getSerial());
         JsonArrayBuilder arr = Json.createArrayBuilder();
         for (Byte item : template) {
             arr.add(item);
