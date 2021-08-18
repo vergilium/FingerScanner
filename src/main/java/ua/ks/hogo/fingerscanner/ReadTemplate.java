@@ -1,5 +1,6 @@
 package ua.ks.hogo.fingerscanner;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -11,10 +12,8 @@ import ua.ks.hogo.fingerscanner.uartdriver.Abstract.FingerDriver;
 import org.springframework.stereotype.Component;
 
 //import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.TimerTask;
+import javax.json.JsonObject;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -55,7 +54,9 @@ public class ReadTemplate extends TimerTask {
                 SimpleHttpResponse resp = httpClient.getConfiguration().get();
                 ObjectMapper mapper = new ObjectMapper();
                 if (resp.getCode() != 200) return;
-                remoteConfig.Init(mapper.readValue(resp.getBodyText(), RemoteConfig.class));
+                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<Map<String,Object>>(){});
+                if(!map.get("status").equals(0)) return;
+                remoteConfig.Init(mapper.convertValue(map.get("response"), RemoteConfig.class));
             }catch(ExecutionException ex){
                 log.warn(ex.getMessage());
                 return;

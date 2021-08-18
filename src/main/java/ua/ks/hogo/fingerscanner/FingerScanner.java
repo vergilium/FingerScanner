@@ -44,7 +44,7 @@ public class FingerScanner implements CommandLineRunner {
                     IZKPacket packet = new ZKPacket();
                     driver.SetParameter(SidFlag.SID_MODULE_IDENTIFY, Values.VAL_TEMPLATE_MODE);
                     driver.GetParameter(SidFlag.SID_MODULE_IDENTIFY, packet);
-                    driver.SetParameter(SidFlag.SID_TEMPLATE_FORMAT, Values.VAL_FORMAT_ZK10);
+                    driver.SetParameter(SidFlag.SID_TEMPLATE_FORMAT, Values.VAL_FORMAT_ANSI);
                     driver.GetParameter(SidFlag.SID_TEMPLATE_FORMAT, packet);
                     sTimer.schedule(readTemplate, 0, 1000);
                 }

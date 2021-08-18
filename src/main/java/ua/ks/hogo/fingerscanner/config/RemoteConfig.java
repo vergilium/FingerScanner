@@ -25,8 +25,6 @@ public class RemoteConfig {
     @JsonProperty
     private Boolean isBlocked;
     @JsonProperty
-    private String accessKey;
-    @JsonProperty
     private String serverLocale;
     @JsonProperty
     private String ntpServer;
@@ -44,7 +42,6 @@ public class RemoteConfig {
         this.audioLevel = parent.getAudioLevel();
         this.scannerEnable = parent.getScannerEnable();
         this.isBlocked = parent.getIsBlocked();
-        this.accessKey = parent.getAccessKey();
         this.serverLocale = parent.getServerLocale();
         this.ntpServer = parent.getNtpServer();
         this.latestFirmware = parent.getLatestFirmware();

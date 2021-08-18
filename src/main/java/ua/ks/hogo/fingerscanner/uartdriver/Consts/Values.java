@@ -32,8 +32,8 @@ public enum Values implements Flag {
     /** Uniform effect OFF (default) */ VAL_UNIFORM_OFF((byte)0x30),
 
     /** Template format ZKFinger v10 (default) */ VAL_FORMAT_ZK10((byte)0x30),
-    /** Template format ANSI 378 */     VAL_FORMAT_ANSI((byte)0x31),
-    /** Template format ISO 19794-2 */  VAL_FORMAT_ISO((byte)0x31);
+    /** Template format ANSI 378 */     VAL_FORMAT_ANSI((byte)0x32),
+    /** Template format ISO 19794-2 */  VAL_FORMAT_ISO((byte)0x33);
 
     private final byte value;
     Values(byte value){

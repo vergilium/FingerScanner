@@ -22,7 +22,9 @@ import ua.ks.hogo.fingerscanner.utils.Sysinfo;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -117,15 +119,18 @@ public class HttpClient implements DisposableBean {
      * @return Result matching response.
      */
     public Future<SimpleHttpResponse> matchTemplate(@NonNull List<Byte> template) {
-        System.out.println(sysinfo.getSerial());
-        JsonArrayBuilder arr = Json.createArrayBuilder();
+        System.out.println(Arrays.toString(template.toArray()));
+//        JsonArrayBuilder arr = Json.createArrayBuilder();
+        byte[] arr = new byte[template.size()];
+        int index = 0;
         for (Byte item : template) {
-            arr.add(item);
+            arr[index++] = item;
         }
+
 
         JsonObject requestBody = Json.createObjectBuilder()
                 .add("filial_id", remoteConfig.getFilial())
-                .add("template", arr.build())
+                .add("template", DatatypeConverter.printBase64Binary(arr))
                 .build();
 
         return execHttpRequest(HttpEndpoint.FINGER_MATCH, requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());
