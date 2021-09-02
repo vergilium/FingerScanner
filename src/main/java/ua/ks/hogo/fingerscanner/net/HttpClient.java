@@ -119,18 +119,17 @@ public class HttpClient implements DisposableBean {
      * @return Result matching response.
      */
     public Future<SimpleHttpResponse> matchTemplate(@NonNull List<Byte> template) {
-        System.out.println(Arrays.toString(template.toArray()));
-//        JsonArrayBuilder arr = Json.createArrayBuilder();
         byte[] arr = new byte[template.size()];
         int index = 0;
         for (Byte item : template) {
             arr[index++] = item;
         }
-
+        String ft = DatatypeConverter.printBase64Binary(arr);
+        log.debug("Finger template: " + ft);
 
         JsonObject requestBody = Json.createObjectBuilder()
                 .add("filial_id", remoteConfig.getFilial())
-                .add("template", DatatypeConverter.printBase64Binary(arr))
+                .add("template", ft)
                 .build();
 
         return execHttpRequest(HttpEndpoint.FINGER_MATCH, requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());

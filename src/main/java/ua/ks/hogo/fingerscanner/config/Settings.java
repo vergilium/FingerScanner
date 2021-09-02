@@ -3,6 +3,11 @@ package ua.ks.hogo.fingerscanner.config;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.springframework.stereotype.Component;
+import ua.ks.hogo.fingerscanner.sound.SoundCommand;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public final class Settings{
@@ -18,6 +23,8 @@ public final class Settings{
     public int HTTP_SERVER_PORT;
 
     public final String NETWORK_INTERFACE;
+
+    public final Map<SoundCommand, String> SOUND_FILES;
 
     public Settings(){
         Config config = ConfigFactory.load();
@@ -36,6 +43,13 @@ public final class Settings{
         HTTP_REQUEST_TIMEOUT = config.getInt("HTTP.Timeout");
 
         NETWORK_INTERFACE = config.getString("Network.Interface");
+
+        SOUND_FILES = new HashMap<>(){{
+            put(SoundCommand.AUTH_SUCCESS, config.getString("SOUND.AUTH_SUCCESS_PATH"));
+            put(SoundCommand.AUTH_FAIL, config.getString("SOUND.AUTH_FAILED_PATH"));
+            put(SoundCommand.INIT_SUCCESS, config.getString("SOUND.INIT_SUCCESS_PATH"));
+            put(SoundCommand.INIT_FAIL, config.getString("SOUND.INIT_FAILED_PATH"));
+        }};
     }
 
 }

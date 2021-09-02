@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ua.ks.hogo.fingerscanner.sound.Sound;
 
 @Component
 @Data
@@ -38,7 +41,7 @@ public class RemoteConfig {
     public void Init(@NonNull RemoteConfig parent){
         this.filial = parent.getFilial();
         this.bellEnable = parent.getBellEnable();
-        this.audioEnable = parent.getAudioEnable();
+        this.audioEnable = BooleanUtils.isTrue(parent.getAudioEnable());
         this.audioLevel = parent.getAudioLevel();
         this.scannerEnable = parent.getScannerEnable();
         this.isBlocked = parent.getIsBlocked();

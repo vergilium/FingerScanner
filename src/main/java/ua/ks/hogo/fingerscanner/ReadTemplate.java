@@ -8,13 +8,11 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import ua.ks.hogo.fingerscanner.config.RemoteConfig;
 import ua.ks.hogo.fingerscanner.net.HttpClient;
+import ua.ks.hogo.fingerscanner.sound.*;
 import ua.ks.hogo.fingerscanner.uartdriver.Abstract.FingerDriver;
 import org.springframework.stereotype.Component;
 
-//import java.net.URL;
-import javax.json.JsonObject;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 
 @Component
 @Log4j2
@@ -23,17 +21,19 @@ public class ReadTemplate extends TimerTask {
     private final HttpClient httpClient;
     private final RemoteConfig remoteConfig;
     private int connectionAttempt = 10;
+    private final Player player;
 
-    public ReadTemplate(FingerDriver driver, HttpClient httpClient, RemoteConfig remoteConfig) {
+    public ReadTemplate(FingerDriver driver, HttpClient httpClient, RemoteConfig remoteConfig, Player player) {
         this.driver = driver;
         this.httpClient = httpClient;
         this.remoteConfig = remoteConfig;
+        this.player = player;
+        player.init();
     }
 
     @SneakyThrows
     @Override
     public void run() {
-
         if(connectionAttempt == 0) {
             log.error("Coud not get configuration. Exit application!");
             Runtime.getRuntime().exit(0);
@@ -41,11 +41,17 @@ public class ReadTemplate extends TimerTask {
         }
 
         if(remoteConfig.getToken() == null || Objects.equals(remoteConfig.getToken(), "")){
-            SimpleHttpResponse signIn = httpClient.authorozation().get();
-            if(signIn.getCode() != 200) return;
-            String token = signIn.getBodyText();
-            if(token == null || token.equals("")) return;
-            remoteConfig.setToken(token);
+            try {
+                SimpleHttpResponse signIn = httpClient.authorozation().get();
+                if (signIn.getCode() != 200) return;
+                String token = signIn.getBodyText();
+                if (token == null || token.equals("")) return;
+                remoteConfig.setToken(token);
+            }catch (Exception ex){
+                log.error(ex.getMessage());
+                log.debug(ex);
+                return;
+            }
         }
 
         if(remoteConfig.getFilial() == null){
@@ -57,8 +63,11 @@ public class ReadTemplate extends TimerTask {
                 Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<Map<String,Object>>(){});
                 if(!map.get("status").equals(0)) return;
                 remoteConfig.Init(mapper.convertValue(map.get("response"), RemoteConfig.class));
-            }catch(ExecutionException ex){
-                log.warn(ex.getMessage());
+                player.enableAudio();
+                player.play(SoundCommand.INIT_SUCCESS);
+            }catch(Exception ex){
+                log.error(ex.getMessage());
+                log.debug(ex);
                 return;
             }
         }
@@ -74,8 +83,19 @@ public class ReadTemplate extends TimerTask {
         if(template.size() > 0){
             //URL url = null;
             try {
+                ObjectMapper mapper = new ObjectMapper();
                SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
-
+               if(resp.getCode() != 200) {
+                   return;
+               }
+                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<Map<String,Object>>(){});
+                if(!map.get("status").equals(0)) return;
+                Fingerprint fp = mapper.convertValue(map.get("response"), Fingerprint.class);
+                if(fp.matchResult){
+                    player.play(SoundCommand.AUTH_SUCCESS);
+                } else {
+                    player.play(SoundCommand.AUTH_FAIL);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
