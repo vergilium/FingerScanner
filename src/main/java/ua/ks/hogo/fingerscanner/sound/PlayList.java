@@ -2,12 +2,8 @@ package ua.ks.hogo.fingerscanner.sound;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.stereotype.Component;
-import ua.ks.hogo.fingerscanner.config.Settings;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 

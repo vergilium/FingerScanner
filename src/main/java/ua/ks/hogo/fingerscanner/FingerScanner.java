@@ -3,6 +3,7 @@ package ua.ks.hogo.fingerscanner;
 import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import ua.ks.hogo.fingerscanner.config.UARTConfig;
 import ua.ks.hogo.fingerscanner.net.HttpClient;
 import ua.ks.hogo.fingerscanner.net.HttpEndpoint;
 import ua.ks.hogo.fingerscanner.sound.PlayList;
@@ -14,15 +15,14 @@ import ua.ks.hogo.fingerscanner.uartdriver.Consts.Values;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import ua.ks.hogo.fingerscanner.uartdriver.Serial;
 import ua.ks.hogo.fingerscanner.uartdriver.ZKPacket;
 import ua.ks.hogo.fingerscanner.utils.Sysinfo;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-@EnableConfigurationProperties(value = {
-        HttpEndpoint.class
-})
+@EnableConfigurationProperties(HttpEndpoint.class)
 @SpringBootApplication
 public class FingerScanner implements CommandLineRunner {
     private final FingerDriver driver;

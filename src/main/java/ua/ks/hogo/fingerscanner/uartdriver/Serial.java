@@ -1,64 +1,38 @@
 package ua.ks.hogo.fingerscanner.uartdriver;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
-import ua.ks.hogo.fingerscanner.config.Settings;
+import ua.ks.hogo.fingerscanner.config.UARTConfig;
 import ua.ks.hogo.fingerscanner.uartdriver.Abstract.ISerial;
 
 import ua.ks.hogo.fingerscanner.uartdriver.Abstract.IZKPacket;
 import jssc.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.security.InvalidParameterException;
-
-import java.util.Arrays;
 import java.util.List;
 
 @Component
+@EnableConfigurationProperties(UARTConfig.class)
+@Log4j2
 public final class Serial implements ISerial, DisposableBean {
-    private final Logger log;
-    private static Serial instance;
+    private final UARTConfig serialConf;
+
     private static SerialPort serialPort;
-    private final Integer baudrate;
-    private final short stopbit;
-    private final short parity;
-    private final short databits;
-    private final int recTimeout;
     private boolean isOpened;
 
     /**
-     * Static method for get serial port instanse.
-     * If object of serial do not created, it will be create
-     * and return new instance.
-     * @return {ISerial} serial port instance
-     * @throws InvalidParameterException
-     */
-//    public static ISerial initPort() throws InvalidParameterException {
-//        if(instance == null){
-//            instance = new Serial(Settings.getInstance());
-//        }
-//        return instance;
-//    }
-
-    /**
      * COnstructor of serial class.
-     * @param config {Settings} object for port configuration
-     * @throws InvalidParameterException
      */
-    public Serial(Settings config) throws InvalidParameterException {
-        log = LogManager.getLogger(Serial.class);
-        serialPort = new SerialPort(config.UART_PORT);
-        if(Arrays.stream(SERIAL_BAUDRATES_ALLOVED).anyMatch(b -> b == config.UART_BAUDRATE)) {
-            baudrate = config.UART_BAUDRATE;
-        } else {
-            throw new InvalidParameterException("Baudrate parameter has not granted");
-        }
-        stopbit = config.UART_STOPBIT;
-        parity = config.UART_PARITY;
-        databits = config.UART_DATABITS;
+    Serial(UARTConfig config) throws InvalidParameterException {
+        this.serialConf = config;
+        serialPort = new SerialPort(serialConf.getPort());
         isOpened = false;
-        recTimeout = config.UART_RECEIVE_TIMEOUT;
     }
 
     /**
@@ -73,23 +47,26 @@ public final class Serial implements ISerial, DisposableBean {
     /**
      * Open and configure port.
      * Configuration parameter can set in constructor.
-     * @see Serial#Serial(Settings)
+     * @see Serial#Serial(UARTConfig)
      * @throws SerialPortException
      */
     @Override
     public void openPort() throws SerialPortException {
         log.debug("Serial port parameters: " +
-                " Baudrate: " + baudrate +
-                " Databits: " + databits +
-                " Stop bits: " + stopbit +
-                " Parity: " + parity);
+                " Baudrate: " + serialConf.getBaudrate() +
+                " Databits: " + serialConf.getDatabits() +
+                " Stop bits: " + serialConf.getStopbit() +
+                " Parity: " + serialConf.getParity());
         isOpened = serialPort.openPort();
         if(isOpened){
             log.info("Serial port has been opened!");
         } else {
             log.warn("Serial port not opened!");
         }
-        serialPort.setParams(baudrate, databits, stopbit, parity);
+        serialPort.setParams(serialConf.getBaudrate()
+                ,serialConf.getDatabits()
+                ,serialConf.getStopbit()
+                ,serialConf.getParity());
         serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
     }
 
@@ -100,18 +77,13 @@ public final class Serial implements ISerial, DisposableBean {
 
     @Override
     public IZKPacket getPacket(IZKPacket packet) throws SerialPortException, SerialPortTimeoutException {
-         IZKPacket pkt = packet.receivePacket(serialPort.readBytes(IZKPacket.PACKET_SIZE, recTimeout));
+         IZKPacket pkt = packet.receivePacket(serialPort.readBytes(IZKPacket.PACKET_SIZE, serialConf.getRecTimeout()));
          log.debug("\nReceive packet" + pkt);
          return pkt;
     }
 
     @Override
     public boolean sendPacket(IZKPacket packet) throws SerialPortException {
-       // StringBuilder str = new StringBuilder("Sended data: ");
-        //for(byte b: packet.makePacket()){
-       //     str.append(String.format(" 0x%02x", b));
-       // }
-       // System.out.println(str.toString());
         log.debug("\nSend packet" + packet);
         return serialPort.writeBytes(packet.makePacket());
     }
