@@ -44,11 +44,10 @@ public final class Settings{
 
         NETWORK_INTERFACE = config.getString("Network.Interface");
 
-        SOUND_FILES = new HashMap<>(){{
+        SOUND_FILES = new HashMap<SoundCommand, String>(){{
             put(SoundCommand.AUTH_SUCCESS, config.getString("SOUND.AUTH_SUCCESS_PATH"));
             put(SoundCommand.AUTH_FAIL, config.getString("SOUND.AUTH_FAILED_PATH"));
             put(SoundCommand.INIT_SUCCESS, config.getString("SOUND.INIT_SUCCESS_PATH"));
-            put(SoundCommand.INIT_FAIL, config.getString("SOUND.INIT_FAILED_PATH"));
         }};
     }
 

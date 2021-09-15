@@ -20,6 +20,14 @@
                 <Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
             </PatternLayout>
         </File>
+        <Http name="HTTP_LOG" url="http://${bundle:application:HTTP.Server}:${bundle:application:HTTP.Port}/api/scanner/log" method="PUT">
+            <Property name="x-java-runtime" value="$${java:runtime}"/>
+            <Property name="Authorization" value="Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJmaW5nZXJzY2FubmVyXzRiNjgiLCJleHAiOjE2NjI0NzcyMTh9.F5STlr63Vt1R6IvYLcSpz05T8K8JCNjtx77NWh-b6z6HHw6R2tAwspYskVVUC40_OP32OpCAc5yRArulYyefLQ" />
+            <Property name="Content-Type" value="application/json" />
+            <JsonLayout properties="true">
+                <KeyValuePair key="mac" value="${bundle:application:NET.mac}" />
+            </JsonLayout>
+        </Http>
     </Appenders>
     <!-- Loggers section -->
     <Loggers>
@@ -28,6 +36,7 @@
             <AppenderRef ref="app_log" level="DEBUG"/>
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="err_log" level="ERROR"/>
+            <AppenderRef ref="HTTP_LOG" level="ERROR"/>
         </Root>
     </Loggers>
 </Configuration>

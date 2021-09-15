@@ -1,16 +1,15 @@
 package ua.ks.hogo.fingerscanner.net;
 
-public enum HttpEndpoint {
-    DEVICE_SIGNIN("/login"),
-    DEVICE_INIT("/api/finger/scanner/init"),
-    FINGER_MATCH("/api/finger/template/matchZk");
+import lombok.Getter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import java.util.Map;
 
-    private final String endpoint;
-    HttpEndpoint(String endpoint){
-        this.endpoint = endpoint;
-    }
+@Getter
+@ConfigurationProperties(prefix = "endpoint")
+public class HttpEndpoint {
+    private final Map<String, String> httpEndpoint;
 
-    public String getValue() {
-        return endpoint;
+    public HttpEndpoint(Map<String, String> httpEndpoint) {
+        this.httpEndpoint = httpEndpoint;
     }
 }

@@ -14,17 +14,16 @@ import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ua.ks.hogo.fingerscanner.config.RemoteConfig;
 import ua.ks.hogo.fingerscanner.config.Settings;
 import ua.ks.hogo.fingerscanner.utils.Sysinfo;
 
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.xml.bind.DatatypeConverter;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -37,6 +36,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @version 1.0.0
  */
 @Component
+@Configurable
 @Log4j2
 public class HttpClient implements DisposableBean {
 
@@ -52,20 +52,23 @@ public class HttpClient implements DisposableBean {
     @Autowired
     RemoteConfig remoteConfig;
 
+    @Autowired
+    HttpEndpoint httpEndpoint;
+
+
     /**
      * Constructor of http client.
-     * @param config - Application global configuration
-     * @throws ExecutionException - Exception from http client start()
-     * @throws InterruptedException -
      */
-    public HttpClient(Settings config) throws ExecutionException, InterruptedException {
+    HttpClient(@Value("${HTTP.Server}") String host,
+               @Value("${HTTP.Port}") int port,
+               @Value("${HTTP.Timeout}") int timeout) {
         IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
-                .setSoTimeout(Timeout.ofSeconds(config.HTTP_REQUEST_TIMEOUT))
+                .setSoTimeout(Timeout.ofSeconds(timeout))
                 .build();
         client = HttpAsyncClients.custom()
                 .setIOReactorConfig(ioReactorConfig)
                 .build();
-        targetHost = new HttpHost(config.HTTP_SERVER_HOST, config.HTTP_SERVER_PORT);
+        targetHost = new HttpHost(host, port);
         client.start();
     }
 
@@ -92,7 +95,7 @@ public class HttpClient implements DisposableBean {
                 .add("login", "fingerscanner_" + mac.substring(12).replaceAll("[/.:-]",""))
                 .add("password", mac)
                 .build();
-        return execHttpRequest(HttpEndpoint.DEVICE_SIGNIN, requestBody.toString().getBytes(UTF_8));
+        return execHttpRequest(httpEndpoint.getHttpEndpoint().get("SIGNIN"), requestBody.toString().getBytes(UTF_8));
     }
 
     /**
@@ -108,7 +111,7 @@ public class HttpClient implements DisposableBean {
                 .add("mac", sysinfo.getMAC())
                 .build();
 
-        return execHttpRequest(HttpEndpoint.DEVICE_INIT, requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());
+        return execHttpRequest(httpEndpoint.getHttpEndpoint().get("INIT"), requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());
     }
 
     /**
@@ -132,7 +135,7 @@ public class HttpClient implements DisposableBean {
                 .add("template", ft)
                 .build();
 
-        return execHttpRequest(HttpEndpoint.FINGER_MATCH, requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());
+        return execHttpRequest(httpEndpoint.getHttpEndpoint().get("MATCH"), requestBody.toString().getBytes(UTF_8), remoteConfig.getToken());
     }
 
     /**
@@ -143,13 +146,13 @@ public class HttpClient implements DisposableBean {
      * @param token - JWT token if assigned
      * @return Async responce.
      */
-    private Future<SimpleHttpResponse> execHttpRequest(@NonNull HttpEndpoint endpoiunt, byte[] body, String token){
+    private Future<SimpleHttpResponse> execHttpRequest(@NonNull String endpoiunt, byte[] body, String token){
         final SimpleHttpRequest request = SimpleRequestBuilder.post()
                 .setHeader("Content-Type", "application/json; utf-8")
                 .addHeader("User-Agent", "FingerHttpAsyncClient")
                 .addHeader("Authorization", "Bearer " + token)
                 .setHttpHost(targetHost)
-                .setPath(endpoiunt.getValue())
+                .setPath(endpoiunt)
                 .setBody(body, ContentType.APPLICATION_JSON)
                 .build();
 
@@ -165,7 +168,7 @@ public class HttpClient implements DisposableBean {
      * @param body - body container
      * @return Async responce.
      */
-    private Future<SimpleHttpResponse> execHttpRequest(@NonNull HttpEndpoint endpoiunt, byte[] body){
+    private Future<SimpleHttpResponse> execHttpRequest(@NonNull String endpoiunt, byte[] body){
         return execHttpRequest(endpoiunt, body, null);
     }
 

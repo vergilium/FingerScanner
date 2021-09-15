@@ -1,6 +1,7 @@
 package ua.ks.hogo.fingerscanner.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ua.ks.hogo.fingerscanner.config.Settings;
 
@@ -12,6 +13,9 @@ import java.net.NetworkInterface;
 public class Sysinfo {
     @Autowired
     private Settings appConf;
+
+    @Value("${NET.Interface}")
+    private String netInterface;
 
     public String getSerial(){
         String serialNumber = null;
@@ -40,7 +44,7 @@ public class Sysinfo {
 
     public String getMAC(){
         try {
-            NetworkInterface networkInterfaces = NetworkInterface.getByName(appConf.NETWORK_INTERFACE);
+            NetworkInterface networkInterfaces = NetworkInterface.getByName(netInterface);
             byte[] mac = networkInterfaces.getHardwareAddress();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < mac.length; i++) {

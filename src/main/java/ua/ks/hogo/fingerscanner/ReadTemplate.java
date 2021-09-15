@@ -28,17 +28,20 @@ public class ReadTemplate extends TimerTask {
         this.httpClient = httpClient;
         this.remoteConfig = remoteConfig;
         this.player = player;
-        player.init();
     }
 
     @SneakyThrows
     @Override
     public void run() {
+        player.play(SoundCommand.INIT_SUCCESS);
+        player.play(SoundCommand.AUTH_SUCCESS);
+        player.play(SoundCommand.AUTH_FAIL);
         if(connectionAttempt == 0) {
             log.error("Coud not get configuration. Exit application!");
             Runtime.getRuntime().exit(0);
             return;
         }
+
 
         if(remoteConfig.getToken() == null || Objects.equals(remoteConfig.getToken(), "")){
             try {

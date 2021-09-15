@@ -137,6 +137,7 @@ public final class Serial implements ISerial, DisposableBean {
 
     @Override
     public void destroy() throws Exception {
-        serialPort.closePort();
+        if(serialPort.isOpened())
+            serialPort.closePort();
     }
 }

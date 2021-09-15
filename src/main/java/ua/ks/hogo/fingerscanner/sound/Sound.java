@@ -1,6 +1,8 @@
 package ua.ks.hogo.fingerscanner.sound;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.util.ResourceUtils;
+
 import java.io.*;
 import javax.sound.sampled.*;
 
@@ -10,30 +12,35 @@ import javax.sound.sampled.*;
  * @author Oleksii Maloivan
  * @version 1.0.0
  */
+@Log4j2
 public class Sound implements AutoCloseable {
     private boolean released = false;
-    private AudioInputStream stream = null;
     private Clip clip = null;
     private FloatControl volumeControl = null;
     private boolean playing = false;
+    private File f;
 
-    public Sound(String name){
+    public Sound(String file){
         try {
-            File f = ResourceUtils.getFile(name);
+            f = ResourceUtils.getFile(file);
+            log.debug("Audio file path: " + f.getAbsolutePath() + " loading...");
             if(f.exists()) {
-                FileInputStream fis = new FileInputStream(f);
-                BufferedInputStream bis = new BufferedInputStream(fis);
-                stream = AudioSystem.getAudioInputStream(bis);
-                clip = AudioSystem.getClip();
-                clip.open(stream);
-                clip.addLineListener(new Listener());
-                volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                log.debug("File " + f.getName() + " is exist.");
+                AudioFileFormat aff = AudioSystem.getAudioFileFormat(f);
+                AudioFormat af = aff.getFormat();
+                DataLine.Info info = new DataLine.Info(Clip.class, af);
+                log.debug("Audio file " + f.getName() + " information: " + af.toString());
+                if (!AudioSystem.isLineSupported(info)){
+                    log.debug("The audio file " + f.getAbsolutePath() + " format is not suported!!!");
+                    return;
+                }
+                clip = (Clip)AudioSystem.getLine(info);
                 released = true;
             }
-        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException exc) {
-            exc.printStackTrace();
+        } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
+            log.error(ex.getMessage());
+            log.debug(ex);
             released = false;
-            close();
         }
     }
 
@@ -55,29 +62,31 @@ public class Sound implements AutoCloseable {
 
     /**
      * Do play sound.
-     * @param breakOld - flag. If sound now playing and breakOld is true
-     * then old sound has stoped before new play.
      * @return this
      */
-    public Sound play(boolean breakOld) {
-        if (released) {
-            if (breakOld) {
-                clip.stop();
+    public Sound play() {
+        log.debug("Play sound start.");
+        try{
+            if (released) {
+                clip.open(AudioSystem.getAudioInputStream(f));
+                clip.addLineListener(new Listener());
+                volumeControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                setVolume(100);
                 clip.setFramePosition(0);
-                clip.start();
-                playing = true;
-            } else if (!isPlaying()) {
-                clip.setFramePosition(0);
+                log.debug("Audio INFO:\nClip length: " + clip.getMicrosecondLength() / 1000 + " ms" +
+                        "\nClip Level: " + clip.getLevel() +
+                        "\nVolume Level: " + volumeControl.getValue() + " " + volumeControl.getUnits());
                 clip.start();
                 playing = true;
             }
+        } catch (Exception ex){
+            ex.printStackTrace();
+            released = false;
+            close();
         }
         return this;
     }
 
-    public Sound play() {
-       return play(true);
-    }
 
     /**
      * Stop playing.
@@ -86,6 +95,7 @@ public class Sound implements AutoCloseable {
     public Sound stop() {
         if (playing) {
             clip.stop();
+            clip.close();
         }
         return this;
     }
@@ -97,12 +107,12 @@ public class Sound implements AutoCloseable {
         if (clip != null)
             clip.close();
 
-        if (stream != null)
-            try {
-                stream.close();
-            } catch (IOException exc) {
-                exc.printStackTrace();
-            }
+//        if (stream != null)
+//            try {
+//                stream.close();
+//            } catch (IOException exc) {
+//                exc.printStackTrace();
+//            }
     }
 
     /**
@@ -151,6 +161,7 @@ public class Sound implements AutoCloseable {
                 playing = false;
                 synchronized(clip) {
                     clip.notify();
+                    clip.close();
                 }
             }
         }
