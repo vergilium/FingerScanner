@@ -2,6 +2,7 @@ package ua.ks.hogo.fingerscanner.uartdriver.Consts;
 
 import ua.ks.hogo.fingerscanner.uartdriver.Abstract.Flag;
 
+@SuppressWarnings("unused")
 public enum Values implements Flag {
     /** Not save the record. */         VAL_LOG_NOTSAVE((byte)0x30),
     /** Save the record. */             VAL_LOG_SAVE((byte)0x31),

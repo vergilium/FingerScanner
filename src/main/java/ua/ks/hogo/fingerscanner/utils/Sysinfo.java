@@ -1,19 +1,15 @@
 package ua.ks.hogo.fingerscanner.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ua.ks.hogo.fingerscanner.config.Settings;
 
 import java.io.*;
 import java.net.NetworkInterface;
 
 
 @Component
+@SuppressWarnings("unused")
 public class Sysinfo {
-    @Autowired
-    private Settings appConf;
-
     @Value("${NET.Interface}")
     private String netInterface;
 

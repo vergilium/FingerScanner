@@ -2,16 +2,10 @@ package ua.ks.hogo.fingerscanner.uartdriver;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 import ua.ks.hogo.fingerscanner.config.UARTConfig;
-import ua.ks.hogo.fingerscanner.uartdriver.Abstract.ISerial;
-
-import ua.ks.hogo.fingerscanner.uartdriver.Abstract.IZKPacket;
+import ua.ks.hogo.fingerscanner.uartdriver.Abstract.*;
 import jssc.*;
 
 import java.security.InvalidParameterException;
@@ -20,6 +14,7 @@ import java.util.List;
 @Component
 @EnableConfigurationProperties(UARTConfig.class)
 @Log4j2
+@SuppressWarnings("unused")
 public final class Serial implements ISerial, DisposableBean {
     private final UARTConfig serialConf;
 
@@ -48,7 +43,7 @@ public final class Serial implements ISerial, DisposableBean {
      * Open and configure port.
      * Configuration parameter can set in constructor.
      * @see Serial#Serial(UARTConfig)
-     * @throws SerialPortException
+     * @throws SerialPortException -
      */
     @Override
     public void openPort() throws SerialPortException {

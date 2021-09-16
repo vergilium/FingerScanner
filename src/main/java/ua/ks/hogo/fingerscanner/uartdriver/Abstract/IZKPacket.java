@@ -1,5 +1,6 @@
 package ua.ks.hogo.fingerscanner.uartdriver.Abstract;
 
+@SuppressWarnings("unused")
 public interface IZKPacket {
     short PACKET_SIZE = 13;
     byte PACKET_START = 0x70;

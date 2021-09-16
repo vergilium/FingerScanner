@@ -115,7 +115,7 @@ public class ZKPacket implements IZKPacket {
     }
 
     private static int BytesToInt(byte[] arr){
-        int buff = 0;
+        int buff;
         buff = Byte.toUnsignedInt(arr[0]);
         buff |= (arr[1] << 8);
         buff |= (arr[2] << 16);

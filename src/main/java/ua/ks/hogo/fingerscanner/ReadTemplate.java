@@ -33,15 +33,11 @@ public class ReadTemplate extends TimerTask {
     @SneakyThrows
     @Override
     public void run() {
-        player.play(SoundCommand.INIT_SUCCESS);
-        player.play(SoundCommand.AUTH_SUCCESS);
-        player.play(SoundCommand.AUTH_FAIL);
         if(connectionAttempt == 0) {
             log.error("Coud not get configuration. Exit application!");
             Runtime.getRuntime().exit(0);
             return;
         }
-
 
         if(remoteConfig.getToken() == null || Objects.equals(remoteConfig.getToken(), "")){
             try {
@@ -63,7 +59,8 @@ public class ReadTemplate extends TimerTask {
                 SimpleHttpResponse resp = httpClient.getConfiguration().get();
                 ObjectMapper mapper = new ObjectMapper();
                 if (resp.getCode() != 200) return;
-                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<Map<String,Object>>(){});
+                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<>() {
+                });
                 if(!map.get("status").equals(0)) return;
                 remoteConfig.Init(mapper.convertValue(map.get("response"), RemoteConfig.class));
                 player.enableAudio();
@@ -84,17 +81,18 @@ public class ReadTemplate extends TimerTask {
         driver.ScanTemplate(template);
 
         if(template.size() > 0){
-            //URL url = null;
             try {
                 ObjectMapper mapper = new ObjectMapper();
                SimpleHttpResponse resp = httpClient.matchTemplate(template).get();
                if(resp.getCode() != 200) {
                    return;
                }
-                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<Map<String,Object>>(){});
+                Map<String, Object> map = mapper.readValue(resp.getBodyText(), new TypeReference<>() {
+                });
                 if(!map.get("status").equals(0)) return;
                 Fingerprint fp = mapper.convertValue(map.get("response"), Fingerprint.class);
                 if(fp.matchResult){
+                    log.info("User by id: " + fp.ownerId + " is athenticated success!");
                     player.play(SoundCommand.AUTH_SUCCESS);
                 } else {
                     player.play(SoundCommand.AUTH_FAIL);

@@ -1,18 +1,21 @@
 package ua.ks.hogo.fingerscanner.sound;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ua.ks.hogo.fingerscanner.config.RemoteConfig;
 
 
 @Component
+@SuppressWarnings("unused")
 public class Player {
     private boolean isEnable = true;
 
-    @Autowired
-    private RemoteConfig remoteConfig;
-    @Autowired
-    private PlayList playList;
+    private final RemoteConfig remoteConfig;
+    private final PlayList playList;
+
+    public Player(RemoteConfig remoteConfig, PlayList playList) {
+        this.remoteConfig = remoteConfig;
+        this.playList = playList;
+    }
 
     public void play(SoundCommand soundCommand){
         if(!isEnable) return;

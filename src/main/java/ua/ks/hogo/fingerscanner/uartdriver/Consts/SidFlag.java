@@ -107,7 +107,7 @@ public enum SidFlag implements Flag {
 
     /**
      * Working Module.
-     * Authorization mode: identification inside the module. By default.
+     * Authorization mode: identification inside the module. Default.
      * @see Values#VAL_AUTH_MODE
      * Scanner(picture): keep sending the captured image, and send to host device.
      * @see Values#VAL_PHOTO_MODE

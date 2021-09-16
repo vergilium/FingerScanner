@@ -7,6 +7,7 @@ import jssc.SerialPortTimeoutException;
 import java.io.IOException;
 import java.util.List;
 
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public interface ISerial {
     int[] SERIAL_BAUDRATES_ALLOVED = {
             SerialPort.BAUDRATE_115200

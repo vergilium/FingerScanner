@@ -89,7 +89,7 @@ public final class ZKTDriver implements FingerDriver {
      * @param code SID flag by needed parameter
      * @param paramValue {IZKPacket}
      * @return {int} Status value: 0 - success, -1 - error
-     * @throws InvalidParameterException May be throw exception of invalid set parameter
+     * @throws InvalidParameterException May be throw exception to invalid set parameter
      */
     @Override
     public int GetParameter(Flag code, IZKPacket paramValue) throws InvalidParameterException {

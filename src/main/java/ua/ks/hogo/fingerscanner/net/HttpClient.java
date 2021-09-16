@@ -13,19 +13,16 @@ import org.apache.hc.core5.io.CloseMode;
 import org.apache.hc.core5.reactor.IOReactorConfig;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ua.ks.hogo.fingerscanner.config.RemoteConfig;
-import ua.ks.hogo.fingerscanner.config.Settings;
 import ua.ks.hogo.fingerscanner.utils.Sysinfo;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.xml.bind.DatatypeConverter;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -46,22 +43,19 @@ public class HttpClient implements DisposableBean {
     private final HttpHost targetHost;
 
     /** Object of get hardvare information */
-    @Autowired
-    Sysinfo sysinfo;
-
-    @Autowired
-    RemoteConfig remoteConfig;
-
-    @Autowired
-    HttpEndpoint httpEndpoint;
-
+    private final Sysinfo sysinfo;
+    private final RemoteConfig remoteConfig;
+    private final HttpEndpoint httpEndpoint;
 
     /**
      * Constructor of http client.
      */
     HttpClient(@Value("${HTTP.Server}") String host,
                @Value("${HTTP.Port}") int port,
-               @Value("${HTTP.Timeout}") int timeout) {
+               @Value("${HTTP.Timeout}") int timeout,
+               Sysinfo sysinfo,
+               RemoteConfig remoteConfig,
+               HttpEndpoint httpEndpoint) {
         IOReactorConfig ioReactorConfig = IOReactorConfig.custom()
                 .setSoTimeout(Timeout.ofSeconds(timeout))
                 .build();
@@ -70,6 +64,9 @@ public class HttpClient implements DisposableBean {
                 .build();
         targetHost = new HttpHost(host, port);
         client.start();
+        this.sysinfo = sysinfo;
+        this.remoteConfig = remoteConfig;
+        this.httpEndpoint = httpEndpoint;
     }
 
     /**

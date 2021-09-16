@@ -1,5 +1,6 @@
 package ua.ks.hogo.fingerscanner.sound;
 
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.ResourceUtils;
 
@@ -13,6 +14,7 @@ import javax.sound.sampled.*;
  * @version 1.0.0
  */
 @Log4j2
+@SuppressWarnings("unused")
 public class Sound implements AutoCloseable {
     private boolean released = false;
     private Clip clip = null;
@@ -95,7 +97,7 @@ public class Sound implements AutoCloseable {
     public Sound stop() {
         if (playing) {
             clip.stop();
-            clip.close();
+            clip.drain();
         }
         return this;
     }
@@ -106,13 +108,6 @@ public class Sound implements AutoCloseable {
     public void close() {
         if (clip != null)
             clip.close();
-
-//        if (stream != null)
-//            try {
-//                stream.close();
-//            } catch (IOException exc) {
-//                exc.printStackTrace();
-//            }
     }
 
     /**
@@ -149,13 +144,16 @@ public class Sound implements AutoCloseable {
         if (!released) return;
         synchronized(clip) {
             try {
-                while (playing)
+                do {
+                    Thread.sleep(500);
                     clip.wait();
+                }while (clip.isRunning());
             } catch (InterruptedException exc) {}
         }
     }
 
     private class Listener implements LineListener {
+        @SneakyThrows
         public void update(LineEvent ev) {
             if (ev.getType() == LineEvent.Type.STOP) {
                 playing = false;
